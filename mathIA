@@ -1,0 +1,66 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+# Define the cooling model based on Newton's Law of Cooling
+def cooling_model(t, k, T0):
+    T_env = 26  # Ambient temperature in °C
+    return T_env + (T0 - T_env) * np.exp(-k * t)
+
+# Experimental data (time in minutes and average temperature for each cup)
+time_data = np.array([0, 2, 4, 6, 8, 10, 12])
+
+# Average temperatures for each cup
+temp_cup1 = np.array([84.94, 80.42, 75.54, 71.58, 67.46, 64.76, 61.22])
+temp_cup2 = np.array([83.92, 77.42, 72.08, 68.08, 65.64, 62.28, 59.16])
+temp_cup3 = np.array([84.52, 78.66, 74.64, 70.72, 67.44, 63.98, 61.08])
+
+# Fit the model to the data for each cup
+popt_cup1, _ = curve_fit(cooling_model, time_data, temp_cup1)
+k_cup1, T0_cup1 = popt_cup1
+
+popt_cup2, _ = curve_fit(cooling_model, time_data, temp_cup2)
+k_cup2, T0_cup2 = popt_cup2
+
+popt_cup3, _ = curve_fit(cooling_model, time_data, temp_cup3)
+k_cup3, T0_cup3 = popt_cup3
+
+# Generate the fitted curves
+time_fine = np.linspace(0, 12, 100)  # Time values for smooth curves
+fitted_cup1 = cooling_model(time_fine, k_cup1, T0_cup1)
+fitted_cup2 = cooling_model(time_fine, k_cup2, T0_cup2)
+fitted_cup3 = cooling_model(time_fine, k_cup3, T0_cup3)
+
+# Plotting the data and the fitted curves
+plt.figure(figsize=(14, 8))
+
+# Plot for Cup 1
+plt.subplot(3, 1, 1)
+plt.plot(time_data, temp_cup1, 'bo', label='Experimental Data - Cup 1')
+plt.plot(time_fine, fitted_cup1, 'r-', label=f'Fitted Model - k = {k_cup1:.4f}')
+plt.title('Average Temperature vs. Time for Cup 1')
+plt.xlabel('Time (minutes)')
+plt.ylabel('Temperature (°C)')
+plt.legend()
+
+# Plot for Cup 2
+plt.subplot(3, 1, 2)
+plt.plot(time_data, temp_cup2, 'go', label='Experimental Data - Cup 2')
+plt.plot(time_fine, fitted_cup2, 'r-', label=f'Fitted Model - k = {k_cup2:.4f}')
+plt.title('Average Temperature vs. Time for Cup 2')
+plt.xlabel('Time (minutes)')
+plt.ylabel('Temperature (°C)')
+plt.legend()
+
+# Plot for Cup 3
+plt.subplot(3, 1, 3)
+plt.plot(time_data, temp_cup3, 'mo', label='Experimental Data - Cup 3')
+plt.plot(time_fine, fitted_cup3, 'r-', label=f'Fitted Model - k = {k_cup3:.4f}')
+plt.title('Average Temperature vs. Time for Cup 3')
+plt.xlabel('Time (minutes)')
+plt.ylabel('Temperature (°C)')
+plt.legend()
+
+# Adjust layout and show the plots
+plt.tight_layout()
+plt.show()
